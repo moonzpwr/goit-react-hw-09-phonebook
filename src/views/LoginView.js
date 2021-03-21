@@ -1,28 +1,29 @@
-import { Component } from "react";
-import { connect } from "react-redux";
+import { useState } from "react";
+import {  useDispatch } from "react-redux";
 import { CSSTransition } from 'react-transition-group';
 import authOperations from '../redux/auth/auth-operations';
 
-class Login extends Component {
-  state = {
-    email: '',
-    password: ''
-  }
+export default function Login() {
+  const dispatch = useDispatch();
   
-  handleChange = ({ target: { name, value } }) => {
-    this.setState({[name]: value})
-  }
+     const [email, setEmail] = useState('');
+    const emailChange = ({ target: {  value } }) => {
+      setEmail(value)   
+    }
 
-  handleSubmit = e => {
+    const [password, setPassword] = useState('');
+    const passwordChange = ({ target: {  value } }) => {
+     setPassword(value)   
+    }
+  const handleSubmit = e => {
     e.preventDefault()
 
-    this.props.onLogin(this.state)
+    dispatch(authOperations.logIn({email, password}))
 
-    this.setState({ name: '', email: '', password:''})
+    setEmail('');
+    setPassword('');
   }
 
-  render() {
-    const {email, password} = this.state
     return (
       <div className='authContainer'>
         <CSSTransition
@@ -32,22 +33,16 @@ class Login extends Component {
             classNames='title'>
             <h1 className="title">Sing in</h1>
           </CSSTransition>
-        <form autoComplete='off' onSubmit={this.handleSubmit} className='authForm'>
+        <form autoComplete='off' onSubmit={handleSubmit} className='authForm'>
           <label>
-            E-mail: <input type='email' name='email' value={email} onChange={this.handleChange}></input>
+            E-mail: <input type='email' name='email' value={email} onChange={emailChange}></input>
           </label>
           <label>
-            Password: <input type='password' name='password' value={password} onChange={this.handleChange}></input>
+            Password: <input type='password' name='password' value={password} onChange={passwordChange}></input>
           </label>
           <button type='submit'>Submit</button>
         </form>
       </div>
     )
-  }
 }
 
-const mapDispatchToProps = {
-onLogin: authOperations.logIn
-}
-
-export default connect(null, mapDispatchToProps)(Login)

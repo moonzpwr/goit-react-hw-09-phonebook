@@ -1,11 +1,13 @@
 import { NavLink } from "react-router-dom";
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 import s from '../Navigation.module.css'
 import routes from '../../../routes'
 import authSelectors from '../../../redux/auth/auth-selectors'
 
 
- function MainNav({isAuthenticated}) {
+
+export default function MainNav() {
+   const isAuthenticated = useSelector(authSelectors.getIsAuthenticated)
   return (<ul className={s.navList}>
     <li><NavLink to={routes.home} className={s.navLink} activeClassName={s.navLinkActive} exact>Home</NavLink></li>
     {isAuthenticated && 
@@ -14,9 +16,3 @@ import authSelectors from '../../../redux/auth/auth-selectors'
       </ul>)
     
 }
-
-const mapStateToProps = state => ({
-isAuthenticated: authSelectors.getIsAuthenticated(state)
-})
-
-export default connect(mapStateToProps)(MainNav)

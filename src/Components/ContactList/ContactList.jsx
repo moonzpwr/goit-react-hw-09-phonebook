@@ -1,23 +1,24 @@
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import propTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { Component } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useEffect } from 'react';
 import ContactItem from './ContactItem/ContactItem';
 import phonebookOperations from "../../redux/phonebook/phonebook-operations";
 import phonebookSelectors from '../../redux/phonebook/phonebook-selectors';
 import s from "./ContactList.module.css";
 
 
+export default function ContactList() {
+    const dispatch = useDispatch();
+    const onRemoveContact = (id) => dispatch(phonebookOperations.removeContact(id));
+    
+    const contacts = useSelector(phonebookSelectors.getVisibleContacts)
+
+    useEffect(() => {
+        dispatch(phonebookOperations.fetchContacts())
+    }, [dispatch])
 
 
-class ContactList extends Component { 
-    componentDidMount() {
-        this.props.fetchContacts()
-    }
-
-
-    render() {
-        const {contacts, onRemoveContact} = this.props
         return (
         <div className={s.container}>
             <CSSTransition
@@ -42,7 +43,7 @@ class ContactList extends Component {
             </TransitionGroup>
         </div>
         )
-    }
+
     
 }
 
@@ -51,13 +52,3 @@ ContactList.propTypes = {
     contacts: propTypes.arrayOf(propTypes.object).isRequired
 }
 
-const mapStateProps = state => ({
-    contacts: phonebookSelectors.getVisibleContacts(state)
-})
-
-const mapDispatchToProps = dispatch => ({
-    onRemoveContact: (id) => dispatch(phonebookOperations.removeContact(id)),
-    fetchContacts: () => dispatch(phonebookOperations.fetchContacts())
-})
-
-export default connect(mapStateProps, mapDispatchToProps)(ContactList)

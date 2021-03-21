@@ -1,17 +1,17 @@
-// import { NavLink } from "react-router-dom";
-// import s from '../Navigation.module.css'
-// import routes from '../../../routes'
-
-import { connect } from "react-redux"
+import { useSelector, useDispatch } from "react-redux"
 import authSelectors from '../../../redux/auth/auth-selectors'
 import authOperations from '../../../redux/auth/auth-operations'
 import defaultAvatar from './user.svg'
 import s from './UserMenu.module.css'
 
- function UserMenu({avatar, name, onLogout}) {
+export default function UserMenu() {
+    const name = useSelector(authSelectors.getUsername)
+    const dispatch = useDispatch()
+    const onLogout = () => dispatch(authOperations.logOut())
+
     return (
         <div className={s.container}>
-            <img src={avatar} alt='' width='30' />
+            <img src={defaultAvatar} alt='' width='30' />
             <span>Welcome, {name}!</span>
             <button type='button' onClick={onLogout}>Logout</button>
         </div>
@@ -19,14 +19,3 @@ import s from './UserMenu.module.css'
     
 }
 
-const mapStateToProps = state => ({
-    name: authSelectors.getUsername(state),
-    avatar: defaultAvatar
-})
-
-const mapDispatchToProps = {
-    onLogout: authOperations.logOut
-}
-
-
-export default connect(mapStateToProps, mapDispatchToProps)(UserMenu)

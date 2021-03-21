@@ -1,13 +1,9 @@
-import { Component } from "react";
 import { CSSTransition } from 'react-transition-group';
 import '../App.css';
-// import { Link } from "react-router-dom";
-
-// import routes from '../routes';
 
 
-export default class HomeView extends Component {
-    render() {
+export default function HomeView() {
+    
         return (
             <CSSTransition
             in={true}
@@ -18,7 +14,7 @@ export default class HomeView extends Component {
           </CSSTransition>
            
         )
-    }
+    
     
 }
 

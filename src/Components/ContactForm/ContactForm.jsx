@@ -1,6 +1,6 @@
-import { Component } from 'react';
+import { useState } from 'react';
 import { CSSTransition } from 'react-transition-group';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import propTypes from 'prop-types';
 import Alert from '../Alert/Alert';
 import phonebookOperations from "../../redux/phonebook/phonebook-operations";
@@ -8,43 +8,36 @@ import phonebookSelectors from '../../redux/phonebook/phonebook-selectors'
 import s from './ContactForm.module.css';
 
 
-class ContactForm extends Component { 
+export default function ContactForm() {
+    const dispatch = useDispatch();
 
-    state = {
-        name: '',   
-        number: '',
-        isExist: false
-    }
+    const [name, setName] = useState('');
+    const [number, setNumber] = useState('');
+    const [isExist, setIsExist] = useState(false);
 
-    handleSubmit = e => { 
-        if (this.props.contacts.filter(el => el.name === this.state.name).length === 0) {
+    const onAddContact = (contact) => dispatch(phonebookOperations.addContact(contact))
+    const contacts = useSelector(phonebookSelectors.getItems)
+
+    const handleSubmit = e => { 
+        if (contacts.filter(el => el.name === name).length === 0) {
             e.preventDefault()
-            this.props.onAddContact(this.state)
-            this.setState({ name: '', number: '' })
-            return
+            onAddContact({ name, number });
+            setName('');
+            setNumber('');
+            return;
         } 
         e.preventDefault()
-        this.setState({ isExist: true })
+        setIsExist(true);
         setTimeout(() => {
-            this.setState({isExist: false})
+            setIsExist(false);
         }, 4000)
     }
 
-    handleChange = e => { 
-        e.target.type === 'text' ?
-        this.setState({
-            name: e.target.value       
-    }) :  this.setState({
-            number: e.target.value       
-    })
-    }
+    const handleChange = e => { e.target.type === 'text' ? setName(e.target.value) :  setNumber(e.target.value)  }
 
-    closeNotification = () => {
-    this.setState({isExist: false})
+    const closeNotification = () => {
+        setIsExist(false);
   }
-
-    render() {
-        const { name, number } = this.state;
 
 
         return (
@@ -56,16 +49,16 @@ class ContactForm extends Component {
             classNames='title'>
             <h1 className="title">Phonebook</h1>
           </CSSTransition>
-            <form className={s.form} onSubmit={this.handleSubmit}>
+            <form className={s.form} onSubmit={handleSubmit}>
                 <label>Name: 
                     <input type="text"
                     value={name}
-                    onChange={this.handleChange} />
+                    onChange={handleChange} />
                 </label>
                 <label >Number: 
                     <input type="tel"
                     value={number}
-                    onChange={this.handleChange}/>
+                    onChange={handleChange}/>
                 </label>
                 <button
                     type='submit'
@@ -73,30 +66,20 @@ class ContactForm extends Component {
                 >Add contact</button>
             </form>
             <CSSTransition
-            in={this.state.isExist}
+            in={isExist}
             unmountOnExit
             timeout={250}
             classNames='notification'>
-                <Alert onClickClose={this.closeNotification} />
+                <Alert onClickClose={closeNotification} />
             </CSSTransition>
             </div>
         )
         }
   
-}
+
 
 ContactForm.propTypes = {
     onAddContact: propTypes.func.isRequired
 }
 
 
-const mapStateToProps = (state) => ({
-    contacts: phonebookSelectors.getItems(state)
-})
-
-
-const mapDispatchToProps = dispatch => ({
-    onAddContact: (contact) => dispatch(phonebookOperations.addContact(contact))
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(ContactForm)

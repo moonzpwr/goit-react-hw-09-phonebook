@@ -1,4 +1,4 @@
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 import MainNav from "./MainNav/MainNav";
 import AuthNav from './AuthNav/AuthNav'
 import UserMenu from './UserMenu/UserMenu'
@@ -7,7 +7,8 @@ import authSelectors from '../../redux/auth/auth-selectors'
 
 
 
- function Navigation({ isAuthenticated }) {
+export default function Navigation() {
+   const isAuthenticated = useSelector(authSelectors.getIsAuthenticated)
   return (
     <div className={s.container}>
       <MainNav />
@@ -18,8 +19,3 @@ import authSelectors from '../../redux/auth/auth-selectors'
   )
 }
 
-const mapStateToProps = (state) => ({
-  isAuthenticated: authSelectors.getIsAuthenticated(state)
-})
-
-export default connect(mapStateToProps, null)(Navigation)

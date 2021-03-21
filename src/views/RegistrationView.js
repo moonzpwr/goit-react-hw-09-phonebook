@@ -1,29 +1,39 @@
-import { Component } from "react";
-import { connect } from "react-redux";
+import {  useState } from "react";
+import { useDispatch } from "react-redux";
 import { CSSTransition } from 'react-transition-group';
 import authOperations from '../redux/auth/auth-operations'
 
- class Registration extends Component {
-  state = {
-    name: '',
-    email: '',
-    password: ''
-  }
-  
-  handleChange = ({ target: { name, value } }) => {
-    this.setState({[name]: value})
-  }
 
-  handleSubmit = e => {
-    e.preventDefault()
+export default function Registration() {
+  const dispatch = useDispatch()
+    const [name, setName] = useState('');
+    const nameChange = ({ target: {  value } }) => {
+      setName(value)   
+    }
 
-    this.props.onRegister(this.state)
+    const [email, setEmail] = useState('');
+    const emailChange = ({ target: {  value } }) => {
+      setEmail(value)   
+    }
 
-    this.setState({ name: '', email: '', password:''})
-  }
+    const [password, setPassword] = useState('');
+    const passwordChange = ({ target: {  value } }) => {
+     setPassword(value)   
+    }
 
-  render() {
-    const {name, email, password} = this.state
+    const handleSubmit = e => {
+      e.preventDefault()
+    
+      dispatch(authOperations.register({name, email, password}));
+      
+      setName('');
+      setEmail('');
+      setPassword('');
+
+    }
+
+
+
     return (
       <div className='authContainer'>
         <CSSTransition
@@ -33,27 +43,20 @@ import authOperations from '../redux/auth/auth-operations'
             classNames='title'>
             <h1 className="title">Sing up</h1>
           </CSSTransition>
-        <form autoComplete='off' onSubmit={this.handleSubmit} className='authForm'>
+        <form autoComplete='off' onSubmit={handleSubmit} className='authForm'>
           <label>
-            Name: <input type='text' name='name' value={name} onChange={this.handleChange}></input>
+            Name: <input type='text' name='name' value={name} onChange={nameChange}></input>
           </label>
           <label>
-            E-mail: <input type='email' name='email' value={email} onChange={this.handleChange}></input>
+            E-mail: <input type='email' name='email' value={email} onChange={emailChange}></input>
           </label>
           <label>
-            Password: <input type='password' name='password' value={password} onChange={this.handleChange}></input>
+            Password: <input type='password' name='password' value={password} onChange={passwordChange}></input>
           </label>
           <button type='submit'>Submit</button>
         </form>
       </div>
     )
-  }
 }
 
 
-
-const mapDispatchToProps = {
-onRegister: authOperations.register
-}
-
-export default connect(null, mapDispatchToProps)(Registration)

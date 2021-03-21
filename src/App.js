@@ -1,7 +1,7 @@
 
-import { Suspense, lazy, Component } from 'react';
+import { Suspense, lazy,  useEffect} from 'react';
 import { Switch, Redirect } from "react-router-dom";
-import { connect } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import PrivateRoute from './Components/Routes/PrivateRoute';
 import PublickRoute from './Components/Routes/PublickRoute';
 import './App.css';
@@ -16,14 +16,12 @@ const Registration = lazy(() => import('./views/RegistrationView' /* webpackChun
 const Login = lazy(() => import('./views/LoginView' /* webpackChunkName: "Login" */));
 
 
+export default function App(props) {
+  const dispatch = useDispatch()
+  useEffect(() => {
+        dispatch(authOperations.getCurentUser())
+    }, [dispatch])
 
-
-class App extends Component {
-  componentDidMount() {
-    this.props.onGetCurrentUser()
-  }
-
-  render() {
      return (
       <>
         <Suspense fallback={<h1>Loading...</h1>}>
@@ -50,11 +48,5 @@ class App extends Component {
         </Suspense>
       </>
     );
-  }
 }
 
-const mapDispatchToProps = {
-  onGetCurrentUser: authOperations.getCurentUser
-}
-
-export default connect(null, mapDispatchToProps)(App)
